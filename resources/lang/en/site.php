@@ -44,6 +44,9 @@ return [
         'name' => 'name in english',
         'description' => 'description in english',
     ],
+    'phone' => 'phone',
+    'address' => 'address',
+    'clients' => 'clients'
 
 
 
