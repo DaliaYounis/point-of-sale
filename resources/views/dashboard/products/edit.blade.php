@@ -26,25 +26,66 @@
 
                     @include('partials._errors')
 
-                    <form action="{{ route('dashboard.categories.update',$category->id) }}" method="post" enctype="multipart/form-data">
+                    <form action="{{ route('dashboard.products.update',$product->id) }}" method="post" enctype="multipart/form-data">
 
                         {{ csrf_field() }}
                         {{ method_field('put') }}
 
+                        <div class="form-group">
+                            <label>@lang('site.categories')</label>
+                            <select name="category_id" class="form-control">
+                                <option value="">@lang('site.all_categories')</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}" {{ $product->category_id == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
                         @foreach(LaravelLocalization::getSupportedLocales() as $localeCode => $properties)
                             <div class="form-group">
                                 <label>@lang('site.'.$localeCode.'.name')</label>
-                                <input type="text" name="name[{{$localeCode}}]" class="form-control" value="{{ $category->getTranslation('name',$localeCode)}}">
+                                <input type="text" name="name[{{$localeCode}}]" class="form-control" value="{{$product->name}}">
+                            </div>
+
+                            <div class="form-group">
+                                <label>@lang('site.'.$localeCode.'.description')</label>
+
+                                <textarea type="text" name="description[{{$localeCode}}]" class="form-control ckeditor" >{{$product->description}}</textarea>
                             </div>
                         @endforeach
+                        <div class="form-group">
+                            <label>@lang('site.image')</label>
+                            <input type="file" name="image" class="form-control image">
+                        </div>
+
+                        <div class="form-group">
+                            <img src="{{ $product->image_path }}" style="width: 100px" class="img-thumbnail image-preview" alt="">
+                        </div>
+
+                        <div class="form-group">
+                            <label>@lang('site.purchase_price')</label>
+                            <input type="number" name="purchase_price" step="0.01" class="form-control" value="{{$product->purchase_price}}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>@lang('site.sale_price')</label>
+                            <input type="number" name="sale_price" step="0.01" class="form-control" value="{{$product->sale_price}}">
+                        </div>
+
+                        <div class="form-group">
+                            <label>@lang('site.stock')</label>
+                            <input type="number" name="stock" class="form-control" value="{{$product->stock}}">
+                        </div>
+
+
 
 
 
                         <div class="form-group">
-                            <button type="submit" class="btn btn-primary"><i class="fa fa-edit"></i> @lang('site.edit')</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> @lang('site.add')</button>
                         </div>
 
-                    </form><!-- end of form -->
+                    </form>
 
                 </div><!-- end of box body -->
 

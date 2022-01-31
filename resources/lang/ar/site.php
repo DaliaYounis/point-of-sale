@@ -51,8 +51,8 @@ return [
     'all_categories' => 'كل الأقسام',
     'name' => 'الاسم',
     'description' => 'الوصف',
-    'products_count' => 'عدد الامنتجات',
-    'related_products' => 'المنتجات المرتبطه',
+    'products_count' => 'عدد المنتجات',
+    'related_products' => 'المنتجات المرتبطة',
     'category' => 'القسم',
     'show_products' => 'عرض المنتجات',
     'created_at' => 'تم اضافته',
@@ -65,7 +65,7 @@ return [
     'price' => 'السعر',
     'sale_price' => 'سعر البيع',
     'stock' => 'المخزن',
-    'profit_percent' => 'المكسب',
+    'profit_percent' => 'الربح',
 
     'ar' => [
         'name' => 'الاسم باللغة العربية',

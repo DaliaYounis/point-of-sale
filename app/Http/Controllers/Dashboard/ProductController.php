@@ -16,8 +16,13 @@ class ProductController extends Controller
 
     public function index(Request $request)
     {
-        $products = Product::paginate(2);
-        return view('dashboard.products.index', compact('products'));
+        $categories = Category::all();
+        $products = Product::when($request->search,function ($q) use ($request){
+            return $q->where('name->'.app()->getLocale(), 'like', '%' . $request->search . '%');
+        })->when($request->category_id,function ($q) use ($request){
+            return $q->where('category_id',$request->category_id);
+        })->latest()->paginate(5);
+        return view('dashboard.products.index', compact('products','categories'));
     }
 
 
@@ -42,26 +47,44 @@ class ProductController extends Controller
     }
 
 
-    public function show(Category $category)
+    public function show(Product $product)
     {
         //
     }
 
 
-    public function edit(Category $category)
+    public function edit(Product $product)
     {
-        //
+        $categories = Category::all();
+        return view('dashboard.products.edit', compact('categories','product'));
     }
 
 
-    public function update(Request $request, Category $category)
+
+    public function update(ProductRequest $request, Product $product)
     {
-        //
+        $request_data = $request->all();
+        if ($product->image != 'default.png') {
+            if ($request->image) {
+                \Storage::disk('public_uploads')->delete('/products/' . $product->image);
+                $this->saveImage($request, 'products');
+                $request_data['image'] = $request->image->hashName();
+            }
+        }
+        $product->update($request_data);
+        session()->flash('success', __('site.updated_successfully'));
+        return redirect()->route('dashboard.products.index');
     }
 
 
-    public function destroy(Category $category)
+    public function destroy(Product $product)
     {
-        //
+        if ($product->image != 'default.png') {
+            \Storage::disk('public_uploads')->delete('/users/' . $product->image);
+        }
+        $product->delete();
+        session()->flash('success', __('site.deleted_successfully'));
+        return redirect()->route('dashboard.products.index');
+
     }
 }
