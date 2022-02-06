@@ -31,9 +31,9 @@
                 <li><a href="{{ route('dashboard.clients.index') }}"><i class="fa fa-th"></i><span>@lang('site.clients')</span></a></li>
             @endif
 
-{{--            @if (auth()->user()->hasPermission('read_orders'))--}}
-{{--                <li><a href="{{ route('dashboard.orders.index') }}"><i class="fa fa-th"></i><span>@lang('site.orders')</span></a></li>--}}
-{{--            @endif--}}
+            @if (auth()->user()->hasPermission('orders_read'))
+                <li><a href="{{ route('dashboard.orders.index') }}"><i class="fa fa-th"></i><span>@lang('site.orders')</span></a></li>
+            @endif
 
 {{--            @if (auth()->user()->hasPermission('read_users'))--}}
 {{--                <li><a href="{{ route('dashboard.users.index') }}"><i class="fa fa-th"></i><span>@lang('site.users')</span></a></li>--}}

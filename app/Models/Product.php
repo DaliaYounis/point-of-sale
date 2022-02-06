@@ -16,6 +16,12 @@ class Product extends Model
     public function category(){
         return $this->belongsTo(Category::class);
     }
+    public function orders()
+    {
+        return $this->belongsToMany(Order::class, 'product_order');
+
+    }
+
 
     public function getImagePathAttribute(){
         return asset('uploads/products/'.$this->image);
@@ -26,4 +32,5 @@ class Product extends Model
         $profit_perecent = $profit * 100 / $this->purchase_price ;
         return number_format($profit_perecent, 2);
     }
+
 }

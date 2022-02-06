@@ -3,118 +3,156 @@
 @section('content')
 
     <div class="content-wrapper">
+
         <section class="content-header">
-            <h1>@lang('site.clients')</h1>
+
+            <h1>@lang('site.orders')
+                <small>{{ $orders->total() }} @lang('site.orders')</small>
+            </h1>
+
             <ol class="breadcrumb">
-                <li><a href="{{ route('dashboard.index') }}"><i class="fa fa-dashboard"></i> @lang('site.dashboard')</a>
-                </li>
-                <li class="active">@lang('site.clients')</li>
+                <li><a href="{{ route('dashboard.index') }}"><i class="fa fa-dashboard"></i> @lang('site.dashboard')</a></li>
+                <li class="active">@lang('site.orders')</li>
             </ol>
         </section>
 
-
         <section class="content">
-            <div class="box box-primary">
-                <div class="box-header with-border">
-                    <h3 class="box-title" style="margin-bottom: 15px">@lang('site.clients')
-                        <small>{{$clients->total()}}</small></h3>
-                    <form action="{{ route('dashboard.clients.index') }}" method="get">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <input type="text" name="search" class="form-control" placeholder="@lang('site.search')"
-                                       value="{{ request()->search }}">
+
+            <div class="row">
+
+                <div class="col-md-8">
+
+                    <div class="box box-primary">
+
+                        <div class="box-header">
+
+                            <h3 class="box-title" style="margin-bottom: 10px">@lang('site.orders')</h3>
+
+                            <form action="{{ route('dashboard.orders.index') }}" method="get">
+
+                                <div class="row">
+
+                                    <div class="col-md-8">
+                                        <input type="text" name="search" class="form-control" placeholder="@lang('site.search')" value="{{ request()->search }}">
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <button type="submit" class="btn btn-primary"><i class="fa fa-search"></i> @lang('site.search')</button>
+                                    </div>
+
+                                </div><!-- end of row -->
+
+                            </form><!-- end of form -->
+
+                        </div><!-- end of box header -->
+
+                        @if ($orders->count() > 0)
+
+                            <div class="box-body table-responsive">
+
+                                <table class="table table-hover">
+                                    <tr>
+                                        <th>@lang('site.client_name')</th>
+                                        <th>@lang('site.price')</th>
+                                        {{--                                        <th>@lang('site.status')</th>--}}
+                                        <th>@lang('site.created_at')</th>
+                                        <th>@lang('site.action')</th>
+                                    </tr>
+
+                                    @foreach ($orders as $order)
+                                        <tr>
+                                            <td>{{ $order->client->name }}</td>
+                                            <td>{{ number_format($order->total_price, 2) }}</td>
+                                            {{--<td>--}}
+                                            {{--<button--}}
+                                            {{--data-status="@lang('site.' . $order->status)"--}}
+                                            {{--data-url="{{ route('dashboard.orders.update_status', $order->id) }}"--}}
+                                            {{--data-method="put"--}}
+                                            {{--data-available-status='["@lang('site.processing')", "@lang('site.finished') "]'--}}
+                                            {{--class="order-status-btn btn {{ $order->status == 'processing' ? 'btn-warning' : 'btn-success disabled' }} btn-sm"--}}
+                                            {{-->--}}
+                                            {{--@lang('site.' . $order->status)--}}
+                                            {{--</button>--}}
+                                            {{--</td>--}}
+                                            <td>{{ $order->created_at->toFormattedDateString() }}</td>
+                                            <td>
+                                                <button class="btn btn-primary btn-sm order-products"
+                                                        data-url="{{ route('dashboard.orders.products', $order->id) }}"
+                                                        data-method="get">
+
+                                                    <i class="fa fa-list"></i>
+                                                    @lang('site.show')
+                                                </button>
+                                                @if (auth()->user()->hasPermission('orders_update'))
+                                                    <a href="{{ route('dashboard.orders.edit', ['order' => $order->id,'client' => $order->client->id]) }}" class="btn btn-warning btn-sm"><i class="fa fa-pencil"></i> @lang('site.edit')</a>
+                                                @else
+                                                    <a href="#" disabled class="btn btn-warning btn-sm"><i class="fa fa-edit"></i> @lang('site.edit')</a>
+                                                @endif
+
+                                                @if (auth()->user()->hasPermission('orders_delete'))
+                                                    <form action="{{ route('dashboard.orders.destroy', $order->id) }}" method="post" style="display: inline-block;">
+                                                        {{ csrf_field() }}
+                                                        {{ method_field('delete') }}
+                                                        <button type="submit" class="btn btn-danger btn-sm delete"><i class="fa fa-trash"></i> @lang('site.delete')</button>
+                                                    </form>
+
+                                                @else
+                                                    <a href="#" class="btn btn-danger btn-sm" disabled><i class="fa fa-trash"></i> @lang('site.delete')</a>
+                                                @endif
+
+                                            </td>
+
+                                        </tr>
+
+                                    @endforeach
+
+                                </table><!-- end of table -->
+
+                                {{ $orders->appends(request()->query())->links() }}
+
                             </div>
 
-                            <div class="col-md-4">
-                                <button type="submit" class="btn btn-primary"><i
-                                        class="fa fa-search"></i> @lang('site.search')</button>
-                                @if(auth()->user()->hasPermission('clients_create'))
-                                    <a href="{{ route('dashboard.clients.create') }}" class="btn btn-primary"><i
-                                            class="fa fa-plus"></i> @lang('site.add')</a>
-                                @else
-                                    <a href="#" class="btn btn-primary disabled"><i
-                                            class="fa fa-plus"></i> @lang('site.add')</a>
+                        @else
 
-                                @endif
+                            <div class="box-body">
+                                <h3>@lang('site.no_records')</h3>
                             </div>
 
-                        </div>
-                    </form><!-- end of form -->
+                        @endif
 
-                </div><!-- end of box header -->
+                    </div><!-- end of box -->
 
-                <div class="box-body">
+                </div><!-- end of col -->
 
-                    @if ($clients->count() > 0)
+                <div class="col-md-4">
 
-                        <table class="table table-hover">
+                    <div class="box box-primary">
 
-                            <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>@lang('site.name')</th>
-                                <th>@lang('site.address')</th>
-                                <th>@lang('site.phone')</th>
-                                <th>@lang('site.action')</th>
-                            </tr>
-                            </thead>
+                        <div class="box-header">
+                            <h3 class="box-title" style="margin-bottom: 10px">@lang('site.show_products')</h3>
+                        </div><!-- end of box header -->
 
-                            <tbody>
-                            @foreach ($clients as $index=>$client)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $client->name }}</td>
-                                    <td>{{ $client->address }}</td>
-                                    <td>{{ $client->phone }}</td>
-                                    <td>
+                        <div class="box-body">
 
-                                        @if(auth()->user()->hasPermission('clients_update'))
-                                            <a href="{{ route('dashboard.clients.edit', $client->id) }}"
-                                               class="btn btn-info btn-sm"><i class="fa fa-edit"></i> @lang('site.edit')
-                                            </a>
-                                        @else
-                                            <a href="#" class="btn btn-info btn-sm disabled"><i
-                                                    class="fa fa-edit"></i> @lang('site.edit')</a>
+                            <div style="display: none; flex-direction: column; align-items: center;" id="loading">
+                                <div class="loader"></div>
+                                <p style="margin-top: 10px">@lang('site.loading')</p>
+                            </div>
 
-                                        @endif
+                            <div id="order-product-list">
 
+                            </div><!-- end of order product list -->
 
-                                        @if(auth()->user()->hasPermission('clients_delete'))
-                                            <form action="{{ route('dashboard.clients.destroy', $client->id) }}"
-                                                  method="post" style="display: inline-block">
-                                                {{ csrf_field() }}
-                                                {{ method_field('delete') }}
-                                                <button type="submit" class="btn btn-danger delete btn-sm"><i
-                                                        class="fa fa-trash"></i> @lang('site.delete')</button>
-                                            </form>
-                                        @else
-                                            <button
-                                                class="btn btn-sm btn-danger delete disabled"> @lang('site.delete')</button>
-                                        @endif
-                                    </td>
-                                </tr>
+                        </div><!-- end of box body -->
 
-                            @endforeach
-                            </tbody>
+                    </div><!-- end of box -->
 
-                        </table><!-- end of table -->
-                        {{$clients->appends(request()->query())->links()}}
+                </div><!-- end of col -->
 
+            </div><!-- end of row -->
 
-                    @else
-
-                        <h2>@lang('site.no_data_found')</h2>
-
-                    @endif
-
-                </div><!-- end of box body -->
-
-
-            </div><!-- end of box -->
-
-        </section><!-- end of content -->
+        </section><!-- end of content section -->
 
     </div><!-- end of content wrapper -->
-
 
 @endsection
